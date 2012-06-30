@@ -1,7 +1,7 @@
 <?php
 /*
-Plugin Name: Breadcrumb NavXT - WPML Extensions
-Plugin URI: http://mtekk.us/code/
+Plugin Name: Breadcrumb NavXT WPML Extensions
+Plugin URI: http://mtekk.us/code/breadcrumb-navxt/
 Description: Adds a compatibility layer for improved WPML support.
 Version: 0.0.1
 Author: John Havlik
