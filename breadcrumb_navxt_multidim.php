@@ -3,11 +3,11 @@
 Plugin Name: Breadcrumb NavXT Multi Dimension Extensions
 Plugin URI: http://mtekk.us/code/breadcrumb-navxt/
 Description: Adds the bcn_display_list_multidim function for Vista like breadcrumb trails. For details on how to use this plugin visit <a href="http://mtekk.us/code/breadcrumb-navxt/">Breadcrumb NavXT</a>. 
-Version: 1.5.0
+Version: 1.6.0
 Author: John Havlik
 Author URI: http://mtekk.us/
 */
-/*  Copyright 2011-2012  John Havlik  (email : mtekkmonkey@gmail.com)
+/*  Copyright 2011-2013  John Havlik  (email : mtekkmonkey@gmail.com)
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -78,8 +78,6 @@ class breadcrumb_trail_multidim extends bcn_breadcrumb_trail
 		{
 			$suffix = '';
 		}
-		//Run through a filter for good measure
-		$term->name = apply_filters('get_' . $term->taxonomy, $term->name);
 		//Place the breadcrumb in the trail, uses the constructor to set the title, template, and type, get a pointer to it in return
 		$breadcrumb = $this->add(new bcn_breadcrumb($term->name, $this->opt['H' . $term->taxonomy . '_template_no_anchor'] . $suffix, array($term->taxonomy, 'current-item')));
 		//If we're paged, let's link to the first page
@@ -143,15 +141,15 @@ class breadcrumb_trail_multidim extends bcn_breadcrumb_trail
 		//Place the breadcrumb in the trail, uses the bcn_breadcrumb constructor to set the title, template, and type
 		$breadcrumb = $this->add(new bcn_breadcrumb(get_the_title(), $this->opt['Hpost_' . $post->post_type . '_template_no_anchor'] . $suffix, array('post-' . $post->post_type, 'current-item')));
 		//If the current item is to be linked, or this is a paged post, add in links
-		if($this->opt['bcurrent_item_linked'] || ($page > 0 && $this->opt['bpaged_display']))
+		if($this->opt['bcurrent_item_linked'] || ($page > 1 && $this->opt['bpaged_display']))
 		{
 			//Change the template over to the normal, linked one
 			$breadcrumb->set_template($this->opt['Hpost_' . $post->post_type . '_template']);
 			//Add the link
 			$breadcrumb->set_url(get_permalink());
 		}
-		//If we have a hiearchical post, go through the parent tree
-		if(is_post_type_hierarchical($post->post_type))
+		//If we have page, force it to go through the parent tree
+		if($post->post_type === 'page')
 		{
 			//Done with the current item, now on to the parents
 			$frontpage = get_option('page_on_front');
@@ -160,26 +158,21 @@ class breadcrumb_trail_multidim extends bcn_breadcrumb_trail
 			{
 				$this->post_parents($post->post_parent, $frontpage);
 			}
-			else if(!$this->is_builtin($post->post_type))
-			{
-				//Handle the post's taxonomy
-				$this->post_taxonomy($post->ID, $post->post_type, $post->post_parent);	
-			}
 		}
-		//Otherwise we need the follow the taxonomy tree
+		//Otherwise we need the follow the hiearchy tree
 		else
 		{
-			//Handle the post's taxonomy
-			$this->post_taxonomy($post->ID, $post->post_type, $post->post_parent);
+			//Handle the post's hiearchy
+			$this->post_hierarchy($post->ID, $post->post_type, $post->post_parent);
 		}
 	}
 }
 /**
 * Outputs the breadcrumb trail
 * 
-* @param  (bool)   $return Whether to return or echo the trail.
-* @param  (bool)   $linked Whether to allow hyperlinks in the trail or not.
-* @param  (bool)	$reverse Whether to reverse the output or not.
+* @param bool $return Whether to return or echo the trail.
+* @param bool $linked Whether to allow hyperlinks in the trail or not.
+* @param bool $reverse Whether to reverse the output or not.
 */
 function bcn_display_list_multidim($return = false, $linked = true, $reverse = false)
 {
