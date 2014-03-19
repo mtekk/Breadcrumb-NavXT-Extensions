@@ -3,11 +3,11 @@
 Plugin Name: Breadcrumb NavXT Multi Dimension Extensions
 Plugin URI: http://mtekk.us/code/breadcrumb-navxt/
 Description: Adds the bcn_display_list_multidim function for Vista like breadcrumb trails. For details on how to use this plugin visit <a href="http://mtekk.us/code/breadcrumb-navxt/">Breadcrumb NavXT</a>. 
-Version: 1.6.0
+Version: 1.7.0
 Author: John Havlik
 Author URI: http://mtekk.us/
 */
-/*  Copyright 2011-2013  John Havlik  (email : mtekkmonkey@gmail.com)
+/*  Copyright 2011-2014  John Havlik  (email : john.havlik@mtekk.us)
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -23,7 +23,7 @@ Author URI: http://mtekk.us/
     along with this program; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
-if(class_exists('bcn_admin'))
+if(class_exists('breadcrumb_navxt'))
 {
 class breadcrumb_trail_multidim extends bcn_breadcrumb_trail
 {
@@ -45,7 +45,7 @@ class breadcrumb_trail_multidim extends bcn_breadcrumb_trail
 	{
 		global $post;
 		//Get the current category object, filter applied within this call
-		$term = &get_term($id, $taxonomy);
+		$term = get_term($id, $taxonomy);
 		$suffix = '<ul>' . wp_list_categories('depth=1&parent=' . $term->parent . '&exclude=' . $id . '&echo=0&taxonomy=' . $taxonomy . '&title_li=') . '</ul>';
 		//Hide empty enteries
 		if($suffix === '<ul><li>No categories</li></ul>')
@@ -53,7 +53,7 @@ class breadcrumb_trail_multidim extends bcn_breadcrumb_trail
 			$suffix = '';
 		}
 		//Place the breadcrumb in the trail, uses the constructor to set the title, template, and type, get a pointer to it in return
-		$breadcrumb = $this->add(new bcn_breadcrumb($term->name, $this->opt['H' . $taxonomy . '_template'] . $suffix, array($taxonomy), get_term_link($term, $taxonomy)));
+		$breadcrumb = $this->add(new bcn_breadcrumb($term->name, $this->opt['H' . $taxonomy . '_template'] . $suffix, array('taxonomy', $taxonomy), get_term_link($term, $taxonomy)));
 		//Make sure the id is valid, and that we won't end up spinning in a loop
 		if($term->parent && $term->parent != $id)
 		{
@@ -79,7 +79,7 @@ class breadcrumb_trail_multidim extends bcn_breadcrumb_trail
 			$suffix = '';
 		}
 		//Place the breadcrumb in the trail, uses the constructor to set the title, template, and type, get a pointer to it in return
-		$breadcrumb = $this->add(new bcn_breadcrumb($term->name, $this->opt['H' . $term->taxonomy . '_template_no_anchor'] . $suffix, array($term->taxonomy, 'current-item')));
+		$breadcrumb = $this->add(new bcn_breadcrumb($term->name, $this->opt['H' . $term->taxonomy . '_template_no_anchor'] . $suffix, array('archive', 'taxonomy', $term->taxonomy, 'current-item')));
 		//If we're paged, let's link to the first page
 		if($this->opt['bcurrent_item_linked'] || (is_paged() && $this->opt['bpaged_display']))
 		{
@@ -111,7 +111,7 @@ class breadcrumb_trail_multidim extends bcn_breadcrumb_trail
 			$suffix = '';
 		}
 		//Place the breadcrumb in the trail, uses the constructor to set the title, template, and type, get a pointer to it in return
-		$breadcrumb = $this->add(new bcn_breadcrumb(get_the_title($id), $this->opt['Hpost_' . $parent->post_type . '_template'] . $suffix, array($parent->post_type), get_permalink($id)));
+		$breadcrumb = $this->add(new bcn_breadcrumb(get_the_title($id), $this->opt['Hpost_' . $parent->post_type . '_template'] . $suffix, array('post', 'post-' . $parent->post_type), get_permalink($id)));
 		//Make sure the id is valid, and that we won't end up spinning in a loop
 		if($parent->post_parent >= 0 && $parent->post_parent != false && $id != $parent->post_parent && $frontpage != $parent->post_parent)
 		{
@@ -139,7 +139,7 @@ class breadcrumb_trail_multidim extends bcn_breadcrumb_trail
 			}
 		}
 		//Place the breadcrumb in the trail, uses the bcn_breadcrumb constructor to set the title, template, and type
-		$breadcrumb = $this->add(new bcn_breadcrumb(get_the_title(), $this->opt['Hpost_' . $post->post_type . '_template_no_anchor'] . $suffix, array('post-' . $post->post_type, 'current-item')));
+		$breadcrumb = $this->add(new bcn_breadcrumb(get_the_title(), $this->opt['Hpost_' . $post->post_type . '_template_no_anchor'] . $suffix, array('post', 'post-' . $post->post_type, 'current-item')));
 		//If the current item is to be linked, or this is a paged post, add in links
 		if($this->opt['bcurrent_item_linked'] || ($page > 1 && $this->opt['bpaged_display']))
 		{
