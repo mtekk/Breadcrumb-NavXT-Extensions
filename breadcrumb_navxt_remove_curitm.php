@@ -3,11 +3,11 @@
 Plugin Name: Breadcrumb NavXT Remove Current Item Extension
 Plugin URI: http://mtekk.us/code/breadcrumb-navxt/
 Description: Removes the current item from the breadcrumb trail. For details on how to use this plugin visit <a href="http://mtekk.us/code/breadcrumb-navxt/">Breadcrumb NavXT</a>. 
-Version: 1.2.0
+Version: 1.2.1
 Author: John Havlik
 Author URI: http://mtekk.us/
 */
-/*  Copyright 2012-2017  John Havlik  (email : john.havlik@mtekk.us)
+/*  Copyright 2012-2018  John Havlik  (email : john.havlik@mtekk.us)
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -32,11 +32,15 @@ add_action('bcn_after_fill', 'bcnext_remove_current_item');
  */
 function bcnext_remove_current_item($trail)
 {
-	$types = $trail->breadcrumbs[0]->get_types();
-	//Make sure we have a type and it is a current-item
-	if(is_array($types) && in_array('current-item', $types))
+	//Check to ensure the breadcrumb we're going to play with exists in the trail
+	if($trail->breadcrumbs[0] instanceof bcn_breadcrumb)
 	{
-		//Shift the current item off the front
-		array_shift($trail->breadcrumbs);
+		$types = $trail->breadcrumbs[0]->get_types();
+		//Make sure we have a type and it is a current-item
+		if(is_array($types) && in_array('current-item', $types))
+		{
+			//Shift the current item off the front
+			array_shift($trail->breadcrumbs);
+		}
 	}
 }
