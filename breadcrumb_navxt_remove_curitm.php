@@ -33,7 +33,7 @@ add_action('bcn_after_fill', 'bcnext_remove_current_item');
 function bcnext_remove_current_item($trail)
 {
 	//Check to ensure the breadcrumb we're going to play with exists in the trail
-	if($trail->breadcrumbs[0] instanceof bcn_breadcrumb)
+	if(isset($breadcrumb_trail->breadcrumbs[0]) && $trail->breadcrumbs[0] instanceof bcn_breadcrumb)
 	{
 		$types = $trail->breadcrumbs[0]->get_types();
 		//Make sure we have a type and it is a current-item
